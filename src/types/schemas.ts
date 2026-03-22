@@ -158,7 +158,85 @@ export const updatePagePropertiesTool: Tool = {
   },
 };
 
-// Users tools
+// NEW: Create Page Tool
+export const createPageTool: Tool = {
+  name: "notion_create_page",
+  description:
+    "Create a new page as a child of an existing page in Notion. This is used to create subpages/child pages. The page will appear as a nested page under the parent.",
+  inputSchema: {
+    type: "object",
+    properties: {
+      parent_page_id: {
+        type: "string",
+        description:
+          "The ID of the parent page where the new page will be created." +
+          commonIdDescription,
+      },
+      title: {
+        type: "string",
+        description: "The title of the new page.",
+      },
+      properties: {
+        type: "object",
+        description:
+          "Optional additional properties for the page. For simple pages, title is usually sufficient.",
+      },
+      children: {
+        type: "array",
+        description:
+          "Optional array of block objects to add as the initial content of the page.",
+        items: blockObjectSchema,
+      },
+      icon: {
+        type: "object",
+        description: "Optional icon for the page (emoji or external URL).",
+        properties: {
+          type: {
+            type: "string",
+            enum: ["emoji", "external"],
+            description: "Type of icon.",
+          },
+          emoji: {
+            type: "string",
+            description: "Emoji character if type is 'emoji'.",
+          },
+          external: {
+            type: "object",
+            properties: {
+              url: {
+                type: "string",
+                description: "URL of the icon if type is 'external'.",
+              },
+            },
+          },
+        },
+      },
+      cover: {
+        type: "object",
+        description: "Optional cover image for the page.",
+        properties: {
+          type: {
+            type: "string",
+            enum: ["external"],
+            description: "Type of cover (currently only 'external' supported).",
+          },
+          external: {
+            type: "object",
+            properties: {
+              url: {
+                type: "string",
+                description: "URL of the cover image.",
+              },
+            },
+          },
+        },
+      },
+      format: formatParameter,
+    },
+    required: ["parent_page_id", "title"],
+  },
+};
+
 export const listAllUsersTool: Tool = {
   name: "notion_list_all_users",
   description:

@@ -47,6 +47,17 @@ export interface UpdatePagePropertiesArgs {
   format?: "json" | "markdown";
 }
 
+// NEW: CreatePage args
+export interface CreatePageArgs {
+  parent_page_id: string;
+  title: string;
+  properties?: Record<string, any>;
+  children?: Partial<BlockResponse>[];
+  icon?: { type: "emoji"; emoji: string } | { type: "external"; external: { url: string } };
+  cover?: { type: "external"; external: { url: string } };
+  format?: "json" | "markdown";
+}
+
 // Users
 export interface ListAllUsersArgs {
   start_cursor?: string;

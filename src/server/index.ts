@@ -24,8 +24,8 @@ export async function startServer(
 ) {
   const server = new Server(
     {
-      name: "Notion MCP Server",
-      version: "1.0.0",
+      name: "Notion MCP Server (Patched with createPage)",
+      version: "1.2.5",
     },
     {
       capabilities: {
@@ -260,6 +260,26 @@ export async function startServer(
             break;
           }
 
+          // NEW: Handle notion_create_page
+          case "notion_create_page": {
+            const toolArgs = request.params
+              .arguments as unknown as args.CreatePageArgs;
+            if (!toolArgs.parent_page_id || !toolArgs.title) {
+              throw new Error(
+                "Missing required arguments: parent_page_id and title"
+              );
+            }
+            response = await notionClient.createPage(
+              toolArgs.parent_page_id,
+              toolArgs.title,
+              toolArgs.properties,
+              toolArgs.children,
+              toolArgs.icon,
+              toolArgs.cover
+            );
+            break;
+          }
+
           default:
             throw new Error(`Unknown tool: ${request.params.name}`);
         }
@@ -308,6 +328,7 @@ export async function startServer(
       schemas.updateBlockTool,
       schemas.retrievePageTool,
       schemas.updatePagePropertiesTool,
+      schemas.createPageTool,  // NEW: Added createPageTool
       schemas.listAllUsersTool,
       schemas.retrieveUserTool,
       schemas.retrieveBotUserTool,

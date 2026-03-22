@@ -123,6 +123,65 @@ export class NotionClientWrapper {
     return response.json();
   }
 
+  /**
+   * NEW: Create a page as a child of another page
+   * This uses the POST /pages endpoint with parent.page_id
+   */
+  async createPage(
+    parent_page_id: string,
+    title: string,
+    properties?: Record<string, any>,
+    children?: Partial<BlockResponse>[],
+    icon?: { type: "emoji"; emoji: string } | { type: "external"; external: { url: string } },
+    cover?: { type: "external"; external: { url: string } }
+  ): Promise<PageResponse> {
+    const body: Record<string, any> = {
+      parent: { page_id: parent_page_id },
+      properties: properties || {
+        title: {
+          title: [
+            {
+              type: "text",
+              text: { content: title },
+            },
+          ],
+        },
+      },
+    };
+
+    // If properties were provided but no title, add the title
+    if (properties && !properties.title) {
+      body.properties.title = {
+        title: [
+          {
+            type: "text",
+            text: { content: title },
+          },
+        ],
+      };
+    }
+
+    if (children && children.length > 0) {
+      body.children = children;
+    }
+
+    if (icon) {
+      body.icon = icon;
+    }
+
+    if (cover) {
+      body.cover = cover;
+    }
+
+    const response = await fetch(`${this.baseUrl}/pages`, {
+      method: "POST",
+      headers: this.headers,
+      body: JSON.stringify(body),
+    });
+
+    return response.json();
+  }
+
   async listAllUsers(
     start_cursor?: string,
     page_size?: number
